@@ -34,6 +34,8 @@ func main() {
 	// Parsing flags
 	fileOffset := flag.String("o", "", "offset of the function.")
 	displayVersion := flag.Bool("version", false, "display version")
+	reduceSig := flag.Bool("r", false, "Reduce and use bounds instead of wildcards")
+	scale := flag.Float64("s", 0, "Set upper bound using scaling factor")
 	flag.Parse()
 
 	if *displayVersion {
@@ -63,6 +65,9 @@ func main() {
 	}
 
 	yara, err := generateYara(getFilePath(file), *fileOffset)
+	if *reduceSig {
+		yara = ReduceSignature(yara, float32(*scale))
+	}
 	fmt.Println(yara)
 	if err != nil {
 		os.Exit(1)

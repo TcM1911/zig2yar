@@ -81,3 +81,39 @@ func generateYara(path, funcOffset string) (string, error) {
 	}
 	return convertToYara(bytes), nil
 }
+
+// ReduceSignature shrinks the signature by replacing ?? for {#}.
+// It will ignore single "?" and a single "??" since it does not
+// reduce the number of characters in the signature.
+// The scale factor can be used generate a more relaxed signature.
+// For example 7 "??" with a scaling factor of 1.5 will be converted
+// to "[7-10]".
+func ReduceSignature(signature string, scale float32) string {
+	buf := make([]string, 0, len(signature))
+	arr := strings.Split(signature, " ")
+	for i := 0; i < len(arr); i++ {
+		if arr[i] == "??" {
+			var end int
+			for j, a := range arr[i:] {
+				if a != "??" {
+					end = j - 1
+					break
+				}
+			}
+			if end != 0 {
+				n := end + 1
+				if scale != float32(0) {
+					n = int(float32(n) * scale)
+					buf = append(buf, fmt.Sprintf("[%d-%d]", end+1, n))
+				} else {
+					buf = append(buf, fmt.Sprintf("[%d]", n))
+				}
+				i += end
+				continue
+			}
+		}
+		buf = append(buf, arr[i])
+	}
+
+	return strings.Join(buf, " ")
+}

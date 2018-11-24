@@ -35,7 +35,7 @@ const (
 	GenerateZignatureForFunction = "zaf "
 	GetZignatures                = "zj"
 	RemoveFunctionZignature      = "z-"
-	Analyze                      = "aa"
+	Analyze                      = "aaa"
 )
 
 type fcn struct {

@@ -1,8 +1,6 @@
 # zig2yar
 Use Radare2's zignatures to generate Yara signatures
 
-[![asciicast](https://asciinema.org/a/U573njdV5h4LgyLE8JjqLwmnE.png)](https://asciinema.org/a/U573njdV5h4LgyLE8JjqLwmnE)
-
 The offset can be given as the symbol name, as seen in the video, or hex value:
 ```
 $ zig2yar -o 0x1000043f1 /bin/ls

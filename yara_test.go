@@ -31,19 +31,19 @@ func TestReduceSignature(t *testing.T) {
 		name      string
 		signature string
 		expected  string
-		scale     float32
+		scale     float64
 	}{
 		{"reduce", "{ 65 48 ?? ?? ?? ?? ?? ?? ?? 48 }", "{ 65 48 [7] 48 }", 0},
 		{"reduce_twice", "{ 65 48 ?? ?? ?? ?? ?? ?? ?? 48 ?? ?? ?? 76 }", "{ 65 48 [7] 48 [3] 76 }", 0},
 		{"skip_one", "{ 65 48 ?? 48 }", "{ 65 48 ?? 48 }", 0},
 		{"do_two", "{ 65 48 ?? ?? 48 }", "{ 65 48 [2] 48 }", 0},
-		{"scale_int", "{ 65 48 ?? ?? ?? ?? ?? ?? ?? 48 }", "{ 65 48 [7-14] 48 }", float32(2)},
-		{"scale_float", "{ 65 48 ?? ?? ?? ?? ?? ?? ?? 48 }", "{ 65 48 [7-10] 48 }", float32(1.5)},
+		{"scale_int", "{ 65 48 ?? ?? ?? ?? ?? ?? ?? 48 }", "{ 65 48 [7-14] 48 }", float64(2)},
+		{"scale_float", "{ 65 48 ?? ?? ?? ?? ?? ?? ?? 48 }", "{ 65 48 [7-10] 48 }", float64(1.5)},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual := ReduceSignature(test.signature, test.scale)
+			actual := reduceSignature(test.signature, test.scale)
 			assert.Equal(test.expected, actual, test.name+" failed")
 		})
 	}

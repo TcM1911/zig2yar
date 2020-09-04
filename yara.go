@@ -85,6 +85,14 @@ func generateZig(r2 *r2g2.Client, opts *options) (*r2g2.Zignature, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate a zignature for symbol %s: %w", f.Name, err)
 	}
+
+	if opts.inr2 && opts.funcSection {
+		cb, err := r2.GetClipboard()
+		if err != nil {
+			return nil, err
+		}
+		getYankedSection(z, cb)
+	}
 	return z, nil
 }
 
@@ -122,4 +130,16 @@ func reduceSignature(signature string, scale float64) string {
 	}
 
 	return strings.Join(buf, " ")
+}
+
+func getYankedSection(zig *r2g2.Zignature, cb *r2g2.Clipboard) {
+	idx := strings.Index(zig.Bytes, cb.Bytes)
+	secLen := len(cb.Bytes)
+	if idx == -1 || idx+secLen >= len(zig.Bytes) {
+		// Either no match or overflow.
+		return
+	}
+
+	zig.Bytes = zig.Bytes[idx : idx+secLen]
+	zig.Mask = zig.Mask[idx : idx+secLen]
 }

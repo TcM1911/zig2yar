@@ -22,6 +22,8 @@ package main
 import (
 	"testing"
 
+	"github.com/TcM1911/r2g2"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -47,4 +49,24 @@ func TestReduceSignature(t *testing.T) {
 			assert.Equal(test.expected, actual, test.name+" failed")
 		})
 	}
+}
+
+func TestSectionSignature(t *testing.T) {
+	assert := assert.New(t)
+
+	cb := &r2g2.Clipboard{
+		Address: int64(4294984116),
+		Bytes:   "488b05550e0000488b38488d35580d0000",
+	}
+	zig := &r2g2.Zignature{
+		Bytes: "554889e5488b05550e0000488b38488d35580d000031c0e874020000bf01000000e85e020000",
+		Mask:  "ffffffffff000000000000ffffffff000000000000ffffff00000000ffffffffffff00000000",
+	}
+	expectedBytes := "488b05550e0000488b38488d35580d0000"
+	expectedMask := "ff000000000000ffffffff000000000000"
+
+	getYankedSection(zig, cb)
+
+	assert.Equal(expectedBytes, zig.Bytes)
+	assert.Equal(expectedMask, zig.Mask)
 }

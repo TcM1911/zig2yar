@@ -32,20 +32,32 @@ const (
 )
 
 type options struct {
-	offset uint64
-	reduce bool
-	scale  float64
-	inr2   bool
-	file   string
+	offset      uint64
+	reduce      bool
+	scale       float64
+	inr2        bool
+	file        string
+	funcSection bool
 }
 
 func main() {
 	// Parsing flags
-	fileOffset := flag.Uint64("o", 0, "offset of the function.")
-	displayVersion := flag.Bool("version", false, "display version")
-	reduceSig := flag.Bool("r", false, "Reduce and use bounds instead of wildcards")
-	scale := flag.Float64("s", 0, "Set upper bound using scaling factor")
-	flag.Parse()
+	fileOffset := flag.Uint64("o", 0, "Offset of the function.")
+	displayVersion := flag.Bool("version", false, "Display version.")
+	reduceSig := flag.Bool("r", false, "Reduce and use bounds instead of wildcards.")
+	scale := flag.Float64("s", 0, "Set upper bound using scaling factor.")
+	// Only generate signature from a section of the function.
+	funcSection := false
+
+	// Functionality only supported when executed within radare before parse.
+	if r2g2.CheckForR2Pipe() {
+		yank := flag.Bool("y", false, "Generate signature from yanked bytes.")
+		flag.Parse()
+
+		funcSection = *yank
+	} else {
+		flag.Parse()
+	}
 
 	if *displayVersion {
 		fmt.Printf("Zig2Yar version %s\n", buildVersion)
@@ -87,11 +99,12 @@ func main() {
 	}
 
 	opts := &options{
-		offset: *fileOffset,
-		reduce: *reduceSig,
-		scale:  *scale,
-		inr2:   inR2,
-		file:   file,
+		offset:      *fileOffset,
+		reduce:      *reduceSig,
+		scale:       *scale,
+		inr2:        inR2,
+		file:        file,
+		funcSection: funcSection,
 	}
 
 	run(c, opts)
